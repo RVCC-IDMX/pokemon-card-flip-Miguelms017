@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Main Application Logic - Simplified Version
  * This file contains the main functionality for the Pokemon Card Flip App
@@ -36,6 +37,21 @@ async function initApp() {
 
   // YOUR CODE HERE
 
+  //initialization
+  showLoading();
+  cardGrid.classList.add('hidden');
+  createCardElements();
+
+  //cards creation
+  fetchAndAssignPokemon();
+
+  //data fetching
+  setupEventListeners();
+
+  //set up event listener
+  hideLoading();
+  cardGrid.classList.remove('hidden');
+
   // DEBUGGING TIP: You can verify your initialization sequence by adding:
   // console.log('App initialization started');
   // After each major step, add another console.log to track progress:
@@ -61,6 +77,13 @@ function createCardElements() {
   // 6. Push each card into the cards array
 
   // YOUR CODE HERE
+  cardGrid.innerHTML = '';
+  const cards = [];
+  for (let i = 0; i < CARD_COUNT; i++) {
+    const card = createCardElement(i);
+    cardGrid.appendChild(card);
+    cards.push(card);
+  };
 
   // DEBUGGING TIP: Verify your card creation process:
   // console.log(`Created ${cards.length} cards`);
@@ -94,6 +117,46 @@ function createCardElement(index) {
 
   // YOUR CODE HERE
 
+  //creating card
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.index = index;
+
+  //creating component
+
+  //inner part of the card
+  const cardInner = document.createElement('div');
+  cardInner.className = 'card-inner';
+
+  //front
+  const cardFront =  document.createElement('div');
+  cardFront.className = 'card-front';
+
+  //back
+  const cardBack = document.createElement('div');
+  cardBack.className = 'card-back';
+
+  //image
+  const pokeball = document.createElement('img');
+  pokeball.src = 'assets/pokeball.png';
+  pokeball.alt = 'pokéball';
+  pokeball.className = 'pokeball-img';
+
+  //appending components to main card
+  cardFront.appendChild(pokeball);
+  cardInner.appendChild(cardFront);
+  cardInner.appendChild(cardBack);
+  card.appendChild(cardInner);
+
+  console.log(`Card ${index} structure:`, card);
+
+  console.log(`Card ${index} children:`, card.children);
+
+  console.log('Card inner children:', cardInner.children);
+
+  //return card
+  return card;
+
   // DEBUGGING TIP: You can log the structure of the created card:
   // console.log(`Card ${index} structure:`, card);
   // To check if all elements are properly nested:
@@ -118,6 +181,19 @@ async function fetchAndAssignPokemon() {
   // 5. In the catch block, log any errors with console.error
 
   // YOUR CODE HERE
+  try {
+    const pokemonList = await PokemonService.fetchMultipleRandomPokemon(CARD_COUNT);
+
+    if (DEBUG_SHOW_SPINNER){
+      await new Promise(resolve => setTimeout(resolve, LOADING_DELAY));
+    };
+
+    for (let i = 0; i < CARD_COUNT; i++) {
+      assignPokemonToCard(cards[i], pokemonList[i]);
+    }
+  } catch (error) {
+    console.error('Error fetching and assigning pokemons');
+  }
 
   // DEBUGGING TIP: Log each stage of the process:
   // console.log('Starting to fetch Pokemon');
@@ -150,6 +226,76 @@ function assignPokemonToCard(card, pokemon) {
   //    d. Pokemon stats (height, weight, abilities count)
 
   // YOUR CODE HERE
+  console.log(`Assigning Pokemon "${pokemon.name}" to card`);
+  if (!card){
+    console.log('card is throwing false');
+    return;
+  };
+
+  if(!pokemon){
+    console.log('pokemon is throwing false');
+    return;
+  }
+  card.dataset.pokemon = JSON.stringify(pokemon);
+  console.log('Pokemon data stored in card:', JSON.parse(card.dataset.pokemon));
+  const cardBack = card.querySelector('.card-back');
+  cardBack.innerHTML = '';
+
+  //creating
+
+  //img
+  const PokemonImg = document.createElement('img');
+  PokemonImg.src = pokemon.sprite;
+  PokemonImg.alt = pokemon.name;
+  PokemonImg.className = 'pokemon-img';
+
+  //name
+  const PokemonName = document.createElement('h2');
+  PokemonName.textContent = pokemon.name;
+  PokemonName.className = 'pokemon-name';
+
+  //type
+  const PokemonTypes = document.createElement('div');
+  PokemonTypes.className = 'pokemon.types';
+  PokemonTypes.types.array.forEach(type => {
+    const typeBadge = document.createElement('span');
+    typeBadge.textContent = type;
+    typeBadge.className = `type-badge ${type}`;
+  });
+
+  //stats
+  const pokemonStats = document.createElement('div');
+  pokemonStats.className = 'pokemon-stats';
+
+  //height
+  const heightStat = document.createElement('div');
+  heightStat.className = 'stat';
+  heightStat.innerHTML = `<span>Height</span><span class="stat-value">${pokemon.height}m</span>`;
+
+  //width
+  const widthStat = document.createElement('div');
+  widthStat.className = 'stat';
+  widthStat.innerHTML = `<span>Width</span><span class="stat-value">${pokemon.width}kg</span>`;
+
+  //abilities
+  const Abilities = document.createElement('div');
+  Abilities.className = 'stat';
+  Abilities.innerHTML = '<span>Abilities</span>' +
+  `<span class="stat-value">${pokemon.abilities.length}</span>`;
+
+  //appending stats
+  pokemonStats.appendChild(heightStat);
+  pokemonStats.appendChild(widthStat);
+  pokemonStats.appendChild(Abilities);
+
+  //appendig card
+  cardBack.appendChild(PokemonImg);
+  cardBack.appendChild(PokemonName);
+  cardBack.appendChild(PokemonTypes);
+  cardBack.appendChild(pokemonStats);
+
+  console.log('Card back contents after assignment:', cardBack.innerHTML);
+
 
   // DEBUGGING TIP: Verify the Pokemon data is correctly stored:
   // console.log(`Assigning Pokemon "${pokemon.name}" to card`);
@@ -173,6 +319,16 @@ function handleCardClick(event) {
   // 3. Toggle the 'flipped' class on the card to trigger the flip animation
 
   // YOUR CODE HERE
+  let card = event.target;
+  while (card && !card.classList.contains('card')) {
+    card = card.parentElement;
+  };
+
+  if (!card){
+    return;
+  };
+
+  card.classList.toggle('flipped');
 
   // DEBUGGING TIP: You can track the click target and found card:
   // console.log('Click event target:', event.target);
@@ -191,6 +347,7 @@ function setupEventListeners() {
   // 2. Use the handleCardClick function as the event handler
 
   // YOUR CODE HERE
+  cardGrid.addEventListener('click', handleCardClick);
 
   // DEBUGGING TIP: Verify the event listener was attached:
   // console.log('Event listeners have been set up');
@@ -208,6 +365,7 @@ function showLoading() {
   // 1. Remove the 'hidden' class from the loadingSpinner element
 
   // YOUR CODE HERE
+  loadingSpinner.classList.remove('hidden');
 
   // DEBUGGING TIP: Confirm the spinner's visibility state:
   // console.log('Loading spinner visible:', !loadingSpinner.classList.contains('hidden'));
@@ -223,6 +381,7 @@ function hideLoading() {
   // 1. Add the 'hidden' class to the loadingSpinner element
 
   // YOUR CODE HERE
+  loadingSpinner.classList.add('hidden');
 
   // DEBUGGING TIP: Confirm the spinner's visibility state:
   // console.log('Loading spinner hidden:', loadingSpinner.classList.contains('hidden'));
@@ -233,6 +392,7 @@ function hideLoading() {
 // 2. Use the initApp function as the event handler
 
 // YOUR CODE HERE
+document.addEventListener('DOMContentLoaded', initApp);
 
 // DEBUGGING TIP: You can add a global debug flag at the top of your file:
 // const DEBUG = true;
