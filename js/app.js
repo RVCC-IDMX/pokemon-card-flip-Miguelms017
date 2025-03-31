@@ -43,7 +43,7 @@ async function initApp() {
   createCardElements();
 
   //cards creation
-  fetchAndAssignPokemon();
+  await fetchAndAssignPokemon();
 
   //data fetching
   setupEventListeners();
@@ -78,7 +78,8 @@ function createCardElements() {
 
   // YOUR CODE HERE
   cardGrid.innerHTML = '';
-  const cards = [];
+  //const cards = [];
+  cards.length = 0;
   for (let i = 0; i < CARD_COUNT; i++) {
     const card = createCardElement(i);
     cardGrid.appendChild(card);
@@ -192,7 +193,7 @@ async function fetchAndAssignPokemon() {
       assignPokemonToCard(cards[i], pokemonList[i]);
     }
   } catch (error) {
-    console.error('Error fetching and assigning pokemons');
+    console.error('Error fetching and assigning pokemons', error);
   }
 
   // DEBUGGING TIP: Log each stage of the process:
@@ -257,7 +258,7 @@ function assignPokemonToCard(card, pokemon) {
   //type
   const PokemonTypes = document.createElement('div');
   PokemonTypes.className = 'pokemon.types';
-  PokemonTypes.types.array.forEach(type => {
+  pokemon.types.forEach((type) => {
     const typeBadge = document.createElement('span');
     typeBadge.textContent = type;
     typeBadge.className = `type-badge ${type}`;
@@ -272,10 +273,10 @@ function assignPokemonToCard(card, pokemon) {
   heightStat.className = 'stat';
   heightStat.innerHTML = `<span>Height</span><span class="stat-value">${pokemon.height}m</span>`;
 
-  //width
-  const widthStat = document.createElement('div');
-  widthStat.className = 'stat';
-  widthStat.innerHTML = `<span>Width</span><span class="stat-value">${pokemon.width}kg</span>`;
+  //weight
+  const weightStat = document.createElement('div');
+  weightStat.className = 'stat';
+  weightStat.innerHTML = `<span>Width</span><span class="stat-value">${pokemon.weight}kg</span>`;
 
   //abilities
   const Abilities = document.createElement('div');
@@ -285,7 +286,7 @@ function assignPokemonToCard(card, pokemon) {
 
   //appending stats
   pokemonStats.appendChild(heightStat);
-  pokemonStats.appendChild(widthStat);
+  pokemonStats.appendChild(weightStat);
   pokemonStats.appendChild(Abilities);
 
   //appendig card
