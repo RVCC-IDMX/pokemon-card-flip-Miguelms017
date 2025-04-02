@@ -79,7 +79,7 @@ This project is ready to deploy to Netlify for free hosting:
    - Click "Deploy site"
 
 
-Your site will be live at a URL like `https://your-site-name.netlify.app`
+Your site will be live at a URL like `https://pokemoncard-miguelms017.netlify.app`
 
 ### Continuous Deployment
 
