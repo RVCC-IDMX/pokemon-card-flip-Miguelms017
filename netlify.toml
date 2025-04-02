@@ -4,7 +4,7 @@
 [build]
   # Directory to publish (use . for the current directory)
   publish = "."
-  
+
   # Command to run before publishing (leave blank for static site)
   command = ""
 
@@ -20,15 +20,15 @@
   [headers.values]
     # Cache control
     Cache-Control = "public, max-age=3600"
-    
+
     # Security headers
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    
+
     # Content Security Policy (CSP)
-    Content-Security-Policy = "default-src 'self'; img-src 'self' https://raw.githubusercontent.com https://*.pokeapi.co data:; connect-src 'self' https://*.pokeapi.co; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline'"
+    Content-Security-Policy = "default-src 'self'; img-src 'self' https://raw.githubusercontent.com https://*.pokeapi.co data:; connect-src 'self' https://pokeapi.co https://*.pokeapi.co; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline'"
 
 # Environment variables (uncomment and modify if needed)
 # [build.environment]
